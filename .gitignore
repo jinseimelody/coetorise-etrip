@@ -1,0 +1,4 @@
+# build - log - node_modules
+/build
+/logs
+/node_modules
