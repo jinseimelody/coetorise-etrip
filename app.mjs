@@ -7,14 +7,14 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import morgan from 'morgan'
 import * as rfs from 'rotating-file-stream'
-import apiRoute from './src/routes/router.js'
+import apiRoute from './src/routes/router.mjs'
 
 const app = express()
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // config for logging
-switch (process.env.NODE_ENV) {
-    case "production":
+// switch (process.env.NODE_ENV) {
+    // case "production":
         const accessLogStream = rfs.createStream(
             'access.log'
             , {
@@ -23,9 +23,9 @@ switch (process.env.NODE_ENV) {
             }
         )
         app.use(morgan('combined', { stream: accessLogStream }))
-    case "development":
-        app.use(morgan('dev'))
-}
+    // case "development":
+        // app.use(morgan('dev'))
+// }
 
 // config for cors
 const allowlist = ['http://localhost:8080', 'http://127.0.0.1:8080']
@@ -55,6 +55,12 @@ switch (process.env.SSL_MODE) {
     default:
         app.listen(process.env.PORT, process.env.HOST, () => {
             console.log(`Example app listening on port ${process.env.PORT}`)
+            console.log(`env:` + JSON.stringify({ 
+                env: process.env.NODE_ENV,
+                port: process.env.PORT,
+                host: process.env.HOST,
+                sslMode: process.env.SSL_MODE
+            }));
         })
         break;
 }

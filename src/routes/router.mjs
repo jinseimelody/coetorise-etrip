@@ -1,5 +1,5 @@
 import express from 'express'
-import router from './todo.route.js'
+import router from './todo.route.mjs'
 
 const apiRoute = express.Router()
 

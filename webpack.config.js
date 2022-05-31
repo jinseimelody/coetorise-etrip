@@ -1,32 +1,43 @@
-import nodeExternals from 'webpack-node-externals'
-import path from 'path'
-import { fileURLToPath } from 'url'
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const nodeExternals = require('webpack-node-externals') 
+const path = require('path')
 
 const config = {
-    entry: './app.js',
+    mode: "production",
+    resolve: {
+        modules: [path.resolve(__dirname, "node_modules")],
+    },
+    entry: './app.mjs',
     output: {
         path: path.resolve(__dirname, 'build'),
         filename: 'bundle.js',
+        libraryTarget: 'umd',
+        clean: true
     },
     target: "node",
-    mode: "development",
     externals: [nodeExternals()],
     module: {
         rules: [
             {
-                test: /\.js$/,
+                test: /\.m?js$/,
                 exclude: /node_modules/,
                 use: {
-                    loader: 'babel-loader',
+                    loader: "babel-loader",
                     options: {
-                        presets: ['@babel/preset-env']
+                        presets: [
+                            [
+                                "@babel/preset-env",
+                                {
+                                    targets: {
+                                        browsers: ["since 2016", "ie >= 11"]
+                                    }
+                                }
+                            ]
+                        ]
                     }
-                },
+                }
             },
         ]
     },
 }
 
-export default config
+module.exports = config
