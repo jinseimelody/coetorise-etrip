@@ -13,19 +13,19 @@ const app = express()
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // config for logging
-// switch (process.env.NODE_ENV) {
-    // case "production":
-        const accessLogStream = rfs.createStream(
-            'access.log'
-            , {
-                interval: '1d',
-                path: path.join(__dirname, 'logs')
-            }
-        )
+const accessLogStream = rfs.createStream(
+    'access.log'
+    , {
+        interval: '1d',
+        path: path.join(__dirname, 'logs')
+    }
+)
+switch (process.env.NODE_ENV) {
+    case "production":
         app.use(morgan('combined', { stream: accessLogStream }))
-    // case "development":
-        // app.use(morgan('dev'))
-// }
+    case "development":
+        app.use(morgan('dev'))
+}
 
 // config for cors
 const allowlist = ['http://localhost:8080', 'http://127.0.0.1:8080']
