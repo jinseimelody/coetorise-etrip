@@ -1,15 +1,18 @@
 module.exports = {
   env: {
-    browser: true,
+    node: true,
     es2021: true
   },
   extends: [
-    'standard'
+    'eslint:recommended'
   ],
   parserOptions: {
-    ecmaVersion: 'latest',
+    ecmaVersion: '2022',
     sourceType: 'module'
   },
   rules: {
+    "semi": 2,
+    "no-var": 2,
+    "no-case-declarations": 0
   }
 }

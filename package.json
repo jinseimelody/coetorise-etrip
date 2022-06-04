@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "SET NODE_ENV=development && nodemon app.mjs",
     "build": "webpack --stats-error-details --config webpack.config.js",
+    "lint": "npx eslint --fix src/**",
     "start": "SET NODE_ENV=production && node ./build/bundle.js"
   },
   "author": "khoi.nd",
@@ -24,10 +25,6 @@
     "@babel/preset-env": "^7.18.2",
     "babel-loader": "^8.2.5",
     "eslint": "^8.17.0",
-    "eslint-config-standard": "^17.0.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-n": "^15.2.1",
-    "eslint-plugin-promise": "^6.0.0",
     "nodemon": "^2.0.16",
     "webpack": "^5.72.1",
     "webpack-cli": "^4.9.2",
