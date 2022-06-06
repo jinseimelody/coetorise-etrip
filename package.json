@@ -4,6 +4,7 @@
   "description": "bus booking system",
   "main": "app.mjs",
   "scripts": {
+    "prisma-generate": "npx prisma generate",
     "dev": "SET NODE_ENV=development && nodemon app.mjs",
     "build": "webpack --stats-error-details --config webpack.config.js",
     "lint": "npx eslint --fix src/**",

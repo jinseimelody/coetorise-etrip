@@ -55,7 +55,7 @@ switch (process.env.SSL_MODE) {
     default:
         app.listen(process.env.PORT, process.env.HOST, () => {
             console.log(`Example app listening on port ${process.env.PORT}`);
-            console.log(`env:` + JSON.stringify({ 
+            console.log(`env:` + JSON.stringify({
                 env: process.env.NODE_ENV,
                 port: process.env.PORT,
                 host: process.env.HOST,
@@ -68,8 +68,8 @@ switch (process.env.SSL_MODE) {
 // config routing
 app.use("/api", apiRoute);
 
-app.get('/', (_, res) => {
-    res.send("root");
+app.get('/', async (_, res) => {
+    res.send("You are in Root");
 });
 
 app.get("*", (_, res) => {
