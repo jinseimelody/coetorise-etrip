@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/', TodoController.getAllTodos);
 
-router.get('/id/:id', TodoController.getTodo);
+router.get('/:id', TodoController.getTodo);
 
 
 export default router;
