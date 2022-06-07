@@ -3,6 +3,16 @@
   "version": "1.0.0",
   "description": "bus booking system",
   "main": "app.mjs",
+  "prettier": {
+    "arrowParens": "avoid",
+    "useTabs": false,
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "none",
+    "bracketSpacing": false,
+    "endOfLine": "lf"
+  },
   "scripts": {
     "prisma-generate": "npx prisma generate",
     "dev": "SET NODE_ENV=development && nodemon app.mjs",

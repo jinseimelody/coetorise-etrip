@@ -5,12 +5,12 @@ const apiRoute = express.Router();
 
 // middleware that is specific to this router
 apiRoute.use((req, res, next) => {
-    next();
+  next();
 });
 
 // define the home page route
 apiRoute.get('/', (_, res) => {
-    res.send("You are in homepage");
+  res.send('You are in homepage');
 });
 
 apiRoute.use('/todos', router);

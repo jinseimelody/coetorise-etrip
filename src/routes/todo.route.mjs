@@ -7,5 +7,4 @@ router.get('/', TodoController.getAllTodos);
 
 router.get('/:id', TodoController.getTodo);
 
-
 export default router;
