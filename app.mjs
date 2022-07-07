@@ -8,6 +8,7 @@ import {fileURLToPath} from 'url';
 import morgan from 'morgan';
 import * as rfs from 'rotating-file-stream';
 import apiRoute from './src/routes/router.mjs';
+import {Server} from 'socket.io';
 
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -27,7 +28,7 @@ switch (process.env.NODE_ENV) {
 }
 
 // config for cors
-const allowlist = ['http://localhost:8080', 'http://127.0.0.1:8080'];
+const allowlist = ['http://localhost:3000', 'http://127.0.0.1:8080'];
 const corsDelegete = (req, callback) => {
   const origin = req.header('Origin');
   callback(null, {
@@ -51,6 +52,21 @@ switch (process.env.SSL_MODE) {
     );
     secureServer.listen(process.env.PORT, process.env.HOST, () => {
       console.log(`Example app listening on port ${process.env.PORT}`);
+    });
+
+    const io = new Server(secureServer, {
+      cors: {
+        origin: 'http://localhost:3000',
+        methods: ['GET', 'POST']
+      }
+    });
+    // eslint-disable-next-line no-unused-vars
+    io.on('connection', socket => {
+      console.log('a user connected: ' + socket.id);
+
+      socket.on('send_message', data => {
+        socket.broadcast.emit('receive_message', data);
+      });
     });
     break;
   case 'disabled':
