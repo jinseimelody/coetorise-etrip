@@ -1,12 +1,25 @@
+const WebpackShellPluginNext = require('webpack-shell-plugin-next');
 const nodeExternals = require('webpack-node-externals');
 const path = require('path');
 
+const plugins = [];
+plugins.push(
+  new WebpackShellPluginNext({
+    onBuildEnd: {
+      scripts: [`nodemon ./build/bundle.js`],
+      blocking: false,
+      parallel: true
+    }
+  })
+);
+
 const config = {
   mode: 'production',
+  watch: true,
   resolve: {
     modules: [path.resolve(__dirname, 'node_modules')]
   },
-  entry: './app.mjs',
+  entry: './app.js',
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'bundle.js',
@@ -15,6 +28,7 @@ const config = {
   },
   target: 'node',
   externals: [nodeExternals()],
+  plugins,
   module: {
     rules: [
       {
@@ -29,6 +43,16 @@ const config = {
                 {
                   targets: {
                     browsers: ['since 2016', 'ie >= 11']
+                  }
+                }
+              ]
+            ],
+            plugins: [
+              [
+                'module-resolver',
+                {
+                  alias: {
+                    '~': './src'
                   }
                 }
               ]

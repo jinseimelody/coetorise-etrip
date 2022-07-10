@@ -2,7 +2,7 @@
   "name": "coetorise",
   "version": "1.0.0",
   "description": "bus booking system",
-  "main": "app.mjs",
+  "main": "app.js",
   "prettier": {
     "arrowParens": "avoid",
     "useTabs": false,
@@ -15,10 +15,8 @@
   },
   "scripts": {
     "prisma-generate": "npx prisma generate",
-    "dev": "SET NODE_ENV=development && nodemon app.mjs",
-    "build": "webpack --stats-error-details --config webpack.config.js",
     "lint": "npx eslint --fix src/**",
-    "start": "SET NODE_ENV=production && node ./build/bundle.js"
+    "start": "webpack --config webpack.config.js"
   },
   "author": "khoi.nd",
   "license": "ISC",
@@ -37,11 +35,13 @@
     "@babel/plugin-transform-runtime": "^7.18.2",
     "@babel/preset-env": "^7.18.2",
     "babel-loader": "^8.2.5",
+    "babel-plugin-module-resolver": "^4.1.0",
     "eslint": "^8.17.0",
     "nodemon": "^2.0.16",
     "prisma": "^3.14.0",
     "webpack": "^5.72.1",
     "webpack-cli": "^4.9.2",
-    "webpack-node-externals": "^3.0.0"
+    "webpack-node-externals": "^3.0.0",
+    "webpack-shell-plugin-next": "^2.2.2"
   }
 }

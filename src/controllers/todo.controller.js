@@ -1,6 +1,6 @@
-import orm from '../config/orm.mjs';
+import {Orm} from '~/config';
 
-const prisma = orm.getInstace();
+const prisma = Orm.getInstace();
 const TodoController = {};
 
 TodoController.getAllTodos = async (_, res) => {

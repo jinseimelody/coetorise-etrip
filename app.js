@@ -7,8 +7,10 @@ import path from 'path';
 import {fileURLToPath} from 'url';
 import morgan from 'morgan';
 import * as rfs from 'rotating-file-stream';
-import apiRoute from './src/routes/router.mjs';
 import {Server} from 'socket.io';
+
+import apiRoute from './src/routes';
+import {Host} from './src/config';
 
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -18,11 +20,11 @@ const accessLogStream = rfs.createStream('access.log', {
   interval: '1d',
   path: path.join(__dirname, 'logs')
 });
-switch (process.env.NODE_ENV) {
-  case 'production':
+switch (process.env.LOGGING_MODE) {
+  case 'combined':
     app.use(morgan('combined', {stream: accessLogStream}));
     break;
-  case 'development':
+  case 'dev':
     app.use(morgan('dev'));
     break;
 }
@@ -50,9 +52,11 @@ switch (process.env.SSL_MODE) {
       {cert: cert, key: key, passphrase: process.env.PASSPHRASE},
       app
     );
-    secureServer.listen(process.env.PORT, process.env.HOST, () => {
-      console.log(`Example app listening on port ${process.env.PORT}`);
+    secureServer.listen(443, process.env.HOST, () => {
+      console.log(`Example app listening on port 443`);
     });
+
+    Host.build('windows');
 
     const io = new Server(secureServer, {
       cors: {
@@ -60,28 +64,16 @@ switch (process.env.SSL_MODE) {
         methods: ['GET', 'POST']
       }
     });
+
     // eslint-disable-next-line no-unused-vars
     io.on('connection', socket => {
-      console.log('a user connected: ' + socket.id);
-
-      socket.on('send_message', data => {
-        socket.broadcast.emit('receive_message', data);
-      });
+      console.log('A user connected: socket_id ' + socket.id);
     });
     break;
   case 'disabled':
   default:
-    app.listen(process.env.PORT, process.env.HOST, () => {
-      console.log(`Example app listening on port ${process.env.PORT}`);
-      console.log(
-        `env:` +
-          JSON.stringify({
-            env: process.env.NODE_ENV,
-            port: process.env.PORT,
-            host: process.env.HOST,
-            sslMode: process.env.SSL_MODE
-          })
-      );
+    app.listen(80, process.env.HOST, () => {
+      console.log(`Example app listening on port 80`);
     });
     break;
 }

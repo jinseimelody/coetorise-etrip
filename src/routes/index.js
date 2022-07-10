@@ -1,5 +1,4 @@
 import express from 'express';
-import router from './todo.route.mjs';
 
 const apiRoute = express.Router();
 
@@ -13,6 +12,6 @@ apiRoute.get('/', (_, res) => {
   res.send('You are in homepage');
 });
 
-apiRoute.use('/todos', router);
+apiRoute.use('/todos', require('./todo.route.js').default);
 
 export default apiRoute;
