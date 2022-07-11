@@ -1,2 +1,2 @@
-export {default as Orm} from './Orm.js';
-export {default as Host} from './Host.js';
+export {default as Orm} from './orm.js';
+export {default as Host} from './host.js';

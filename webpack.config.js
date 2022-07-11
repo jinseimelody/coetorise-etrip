@@ -52,7 +52,8 @@ const config = {
                 'module-resolver',
                 {
                   alias: {
-                    '~': './src'
+                    '~': './src',
+                    '@': './certificates'
                   }
                 }
               ]

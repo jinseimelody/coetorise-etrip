@@ -1,19 +1,17 @@
 import 'dotenv/config';
 import express from 'express';
-import https from 'https';
 import cors from 'cors';
-import fs from 'fs';
 import path from 'path';
 import {fileURLToPath} from 'url';
 import morgan from 'morgan';
 import * as rfs from 'rotating-file-stream';
-import {Server} from 'socket.io';
+import {Server as SocketServer} from 'socket.io';
 
-import apiRoute from './src/routes';
-import {Host} from './src/config';
+import apiRoute from '~/routes';
+import {Host} from '~/config';
 
 const app = express();
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+global.dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // config for logging
 const accessLogStream = rfs.createStream('access.log', {
@@ -44,39 +42,24 @@ app.use(cors(corsDelegete));
 app.use(express.json());
 
 // config ssl
-switch (process.env.SSL_MODE) {
-  case 'enabled':
-    const cert = fs.readFileSync(path.join(__dirname, process.env.CERT_PATH));
-    const key = fs.readFileSync(path.join(__dirname, process.env.KEY_PATH));
-    const secureServer = https.createServer(
-      {cert: cert, key: key, passphrase: process.env.PASSPHRASE},
-      app
-    );
-    secureServer.listen(443, process.env.HOST, () => {
-      console.log(`Example app listening on port 443`);
-    });
+const server = Host.build(app);
 
-    Host.build('windows');
+// config socket
+const io = new SocketServer(server, {
+  cors: {
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST']
+  }
+});
 
-    const io = new Server(secureServer, {
-      cors: {
-        origin: 'http://localhost:3000',
-        methods: ['GET', 'POST']
-      }
-    });
+// config socket events
+const bookingHandler = require('~/controllers/booking.controller.js');
+const onConnection = socket => {
+  console.log('A user connected: socket_id ' + socket.id);
 
-    // eslint-disable-next-line no-unused-vars
-    io.on('connection', socket => {
-      console.log('A user connected: socket_id ' + socket.id);
-    });
-    break;
-  case 'disabled':
-  default:
-    app.listen(80, process.env.HOST, () => {
-      console.log(`Example app listening on port 80`);
-    });
-    break;
-}
+  bookingHandler(io, socket);
+};
+io.on('connection', onConnection);
 
 // config routing
 app.use('/api', apiRoute);

@@ -10,6 +10,7 @@ module.exports = {
   },
   rules: {
     'no-var': 2,
+    'no-unused-vars': 1,
     'no-case-declarations': 0
   }
 };
