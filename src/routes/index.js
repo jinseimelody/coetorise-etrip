@@ -1,4 +1,6 @@
 import express from 'express';
+import todoRoute from './todo.route.js';
+import userRoute from './user.route.js';
 
 const apiRoute = express.Router();
 
@@ -7,11 +9,16 @@ apiRoute.use((req, res, next) => {
   next();
 });
 
+apiRoute.use('/todos', todoRoute);
+apiRoute.use('/users', userRoute);
+
 // define the home page route
 apiRoute.get('/', (_, res) => {
-  res.send('You are in homepage');
+  res.send('Hi, How are you today');
 });
 
-apiRoute.use('/todos', require('./todo.route.js').default);
+apiRoute.get('*', (_, res) => {
+  res.send('Oop 404');
+});
 
 export default apiRoute;

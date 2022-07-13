@@ -5,10 +5,12 @@ const log = (message, color) => {
   console.log(chalk[color](message));
 };
 
-export const info = message => {
+chalk.info = message => {
   log(message, 'green');
 };
 
-export const focus = message => {
+chalk.focus = message => {
   log(message, 'yellow');
 };
+
+export default chalk;

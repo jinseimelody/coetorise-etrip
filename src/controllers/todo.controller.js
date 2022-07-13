@@ -4,11 +4,7 @@ const prisma = Orm.getInstace();
 const TodoController = {};
 
 TodoController.getAllTodos = async (_, res) => {
-  const todos = await prisma.todo.findMany({
-    include: {
-      author: true
-    }
-  });
+  const todos = await prisma.todo.findMany();
   res.json(todos);
 };
 
@@ -17,9 +13,6 @@ TodoController.getTodo = async (req, res) => {
   const todo = await prisma.todo.findUnique({
     where: {
       id: Number(id) || -1
-    },
-    include: {
-      author: true
     }
   });
   res.json(todo);

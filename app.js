@@ -1,73 +1,91 @@
 import 'dotenv/config';
 import express from 'express';
+import https from 'https';
 import cors from 'cors';
+import morgan from 'morgan';
 import path from 'path';
 import {fileURLToPath} from 'url';
-import morgan from 'morgan';
+import fs from 'fs';
 import * as rfs from 'rotating-file-stream';
 import {Server as SocketServer} from 'socket.io';
 
 import apiRoute from '~/routes';
-import {Host} from '~/config';
+import {dns} from '~/utilities';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
-global.dirname = path.dirname(fileURLToPath(import.meta.url));
+app.use(express.json());
 
-// config for logging
-const accessLogStream = rfs.createStream('access.log', {
-  interval: '1d',
-  path: path.join(__dirname, 'logs')
-});
-switch (process.env.LOGGING_MODE) {
-  case 'combined':
-    app.use(morgan('combined', {stream: accessLogStream}));
-    break;
-  case 'dev':
-    app.use(morgan('dev'));
-    break;
+// config logging
+let logging = morgan('dev');
+if (process.env.LOGGING_MODE === 'combined') {
+  const accessLogStream = rfs.createStream('access.log', {
+    interval: '1d',
+    path: path.join(__dirname, 'logs')
+  });
+  logging = morgan('combined', {stream: accessLogStream});
 }
+app.use(logging);
 
-// config for cors
-const allowlist = ['http://localhost:3000', 'http://127.0.0.1:8080'];
+// config cross side request origin
 const corsDelegete = (req, callback) => {
+  const allowList = ['http://localhost:3000'];
   const origin = req.header('Origin');
   callback(null, {
-    origin: allowlist.indexOf(origin) > -1,
+    origin: allowList.indexOf(origin) > -1,
     optionsSuccessStatus: 200
   });
 };
 app.use(cors(corsDelegete));
 
-// config json
-app.use(express.json());
-
-// config ssl
-const server = Host.build(app);
+// config server
+dns.rewire();
+let server = app;
+let port = 80;
+if (process.env.SSL_MODE === 'enabled') {
+  port = 443;
+  server = https.createServer(
+    {
+      cert: fs.readFileSync(path.join(__dirname, process.env.CERT_PATH)),
+      key: fs.readFileSync(path.join(__dirname, process.env.KEY_PATH)),
+      passphrase: process.env.PASSPHRASE
+    },
+    app
+  );
+}
+server.listen(port, process.env.HOST, () => {
+  console.log(`Example app listening on port ${port}`);
+});
 
 // config socket
 const io = new SocketServer(server, {
   cors: {
-    origin: 'http://localhost:3000',
+    origin: '*',
     methods: ['GET', 'POST']
   }
 });
-
-// config socket events
-const bookingHandler = require('~/controllers/booking.controller.js');
 const onConnection = socket => {
-  console.log('A user connected: socket_id ' + socket.id);
+  console.log(`Count: ${io.engine.clientsCount} - Socket connected: ${socket.id}`);
 
-  bookingHandler(io, socket);
+  socket.on('message', data => {
+    socket.broadcast.emit('message', data);
+  });
 };
 io.on('connection', onConnection);
 
 // config routing
 app.use('/api', apiRoute);
 
-app.get('/', async (_, res) => {
-  res.send('You are in Root');
-});
+// error handler
+app.use((err, req, res, next) => {
+  let status = err.status || 500;
+  if (err.isJoi === true) status = 442;
 
-app.get('*', (_, res) => {
-  res.send('Oop 404');
+  res.status(status);
+  res.send({
+    error: {
+      status: status,
+      message: err.message
+    }
+  });
 });

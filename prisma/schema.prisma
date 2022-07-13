@@ -1,3 +1,4 @@
+// remember to run: npx prisma generate after
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,15 +12,25 @@ model Todo {
   id       Int     @id @default(autoincrement())
   task     String?
   status   Int?
-  author   User?   @relation(fields: [authorId], references: [id])
   authorId Int?
 }
 
 model User {
-  id   Int     @id @default(autoincrement())
-  name String?
-  role Role    @default(USER)
-  Todo Todo[]
+  id            Int            @id @default(autoincrement())
+  name          String
+  email         String
+  password      String
+  refreshTokens RefreshToken[]
+
+  @@unique(fields: [email, password], name: "unique")
+}
+
+model RefreshToken {
+  id          Int     @id @unique @default(autoincrement())
+  hashedToken String
+  userId      Int
+  revoked     Boolean @default(false)
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum Role {
