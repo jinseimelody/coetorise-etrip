@@ -1,1 +1,1 @@
-export {default as Orm} from './orm.js';
+export {default as orm} from './orm.js';

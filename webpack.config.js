@@ -14,7 +14,7 @@ plugins.push(
 );
 
 const config = {
-  mode: 'production',
+  mode: 'development',
   watch: true,
   resolve: {
     modules: [path.resolve(__dirname, 'node_modules')]

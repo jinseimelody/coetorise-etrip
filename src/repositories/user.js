@@ -1,14 +1,14 @@
-import {Orm} from '~/config';
+import {orm} from '~/config';
 
-const prisma = Orm.getInstace();
+const prisma = orm.getInstace();
 const User = {};
+
 User.findByEmail = async email => {
-  const user = await prisma.User.findFirst({
+  return await prisma.User.findFirst({
     where: {
       email
     }
   });
-  return user;
 };
 
 User.findByCredential = async (email, password) => {
@@ -22,7 +22,5 @@ User.findByCredential = async (email, password) => {
   });
   return user;
 };
-
-User.generateAuthToken = () => {};
 
 export default User;

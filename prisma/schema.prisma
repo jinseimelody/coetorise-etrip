@@ -1,6 +1,7 @@
-// remember to run: npx prisma generate after
+// remember to run: npx prisma generate
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 datasource db {
@@ -26,11 +27,13 @@ model User {
 }
 
 model RefreshToken {
-  id          Int     @id @unique @default(autoincrement())
+  id          String  @id @unique @default(uuid())
   hashedToken String
   userId      Int
   revoked     Boolean @default(false)
   user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_token")
 }
 
 enum Role {

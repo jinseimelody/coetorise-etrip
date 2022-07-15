@@ -1,21 +1,21 @@
-import {Orm} from '~/config';
-import {String} from '~/helpers';
+import {orm} from '~/config';
+import {string} from '~/helpers';
 
-const prisma = Orm.getInstace();
+const prisma = orm.getInstace();
 const RefreshToken = {};
 
-RefreshToken.add = async ({jti, refreshToken, userId}) => {
-  return prisma.refreshToken.create({
+RefreshToken.add = async ({jwtId, refreshToken, userId}) => {
+  return await prisma.refreshToken.create({
     data: {
-      id: jti,
-      hashedToken: String.hash(refreshToken),
+      id: jwtId,
+      hashedToken: string.hash(refreshToken),
       userId
     }
   });
 };
 
 RefreshToken.findById = async id => {
-  return prisma.refreshToken.findUnique({
+  return await prisma.refreshToken.findUnique({
     where: {
       id
     }

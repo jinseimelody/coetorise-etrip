@@ -1,16 +1,19 @@
 import {PrismaClient} from '@prisma/client';
+import {string} from '~/helpers';
 
 const prismaConfig = {
   log: ['error']
 };
 
-const Orm = {};
+const orm = {};
 
-Orm.getInstace = () => {
-  if (Orm.instance) return Orm.instance;
+orm.getInstace = () => {
+  if (orm.instance) {
+    return orm.instance;
+  }
 
-  Orm.instance = new PrismaClient(prismaConfig);
-  return Orm.instance;
+  orm.instance = new PrismaClient(prismaConfig);
+  return orm.instance;
 };
 
-export default Orm;
+export default orm;

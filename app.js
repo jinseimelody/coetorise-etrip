@@ -11,6 +11,7 @@ import {Server as SocketServer} from 'socket.io';
 
 import apiRoute from '~/routes';
 import {dns} from '~/utilities';
+import middleware from '~/middleware';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -77,15 +78,4 @@ io.on('connection', onConnection);
 app.use('/api', apiRoute);
 
 // error handler
-app.use((err, req, res, next) => {
-  let status = err.status || 500;
-  if (err.isJoi === true) status = 442;
-
-  res.status(status);
-  res.send({
-    error: {
-      status: status,
-      message: err.message
-    }
-  });
-});
+app.use(middleware.errorHandler);

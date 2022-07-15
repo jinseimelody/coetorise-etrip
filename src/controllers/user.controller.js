@@ -1,38 +1,114 @@
-import jwt from 'jsonwebtoken';
+import {v4} from 'uuid';
+import {orm} from '~/config';
+import {jwt, string} from '~/helpers';
 import {validationSchema} from '~/helpers';
-import {User} from '~/repositories';
 
+const prisma = orm.getInstace();
 const UserController = {};
 
-UserController.login = async (req, res) => {
-  // const {email, password} = req.body;
-  // const user = await User.findByCredential(email, password);
-  // console.log(user);
+UserController.register = async (req, res) => {
+  let {name, email, password} = req.body;
+  // model validation
+  const result = validationSchema.user.register.validate(req.body);
+  if (result.error) throw result.error;
 
-  // if (!user)
-  //   return res
-  //     .status(401)
-  //     .send({error: 'Login failed! Check authentication credentials'});
+  const token = await prisma.$transaction(async pris => {
+    // make sure email not registered
+    const registered = await pris.user.findFirst({where: {email}});
+    if (registered) throw new Error(`${email} is already been registered`);
 
-  // const token = jwt.sign({id: user.id}, process.env.JWT_SECRET);
-  // res.send({user, token});
-  res.send('ok');
+    // create new user
+    const user = await pris.user.create({
+      data: {name: name ?? email, email, password: string.hash(password)}
+    });
+
+    // create token
+    const jwtId = v4();
+    const token = await jwt.signTokens(user, jwtId);
+    await pris.refreshToken.create({
+      data: {id: jwtId, hashedToken: string.hash(token.refreshToken), userId: user.id}
+    });
+
+    return token;
+  });
+
+  return res.json(token);
 };
 
-UserController.register = async (req, res, next) => {
-  try {
-    const {name, email, password} = req.body;
-    const result = validationSchema.user.register.validate(req.body);
-    if (result.error) throw result.error;
+UserController.login = async (req, res) => {
+  const {email, password} = req.body;
+  // model validation
+  const result = validationSchema.user.login.validate(req.body);
+  if (result.error) throw result.error;
 
-    const doesExist = await User.findByEmail(email);
-    if (doesExist) throw new Error(`${result.email} is already been registered`);
+  // make sure authentication credentials is correct
+  const user = await prisma.user.findUnique({
+    where: {unique: {email, password: string.hash(password)}}
+  });
 
-    return res.send();
-  } catch (error) {
-    console.log(error);
-    next(error);
+  if (!user) {
+    res.status(401);
+    throw new Error('login failse, please check authentication credentials');
   }
+
+  // create token
+  const jwtId = v4();
+  const token = await jwt.signTokens(user, jwtId);
+  await prisma.refreshToken.create({
+    data: {id: jwtId, hashedToken: token.refreshToken, userId: user.id}
+  });
+  return res.json(token);
+};
+
+UserController.logout = async (req, res) => {
+  const {refreshToken} = req.body;
+  if (!refreshToken) {
+    res.status(400);
+    throw new Error('Bad request');
+  }
+};
+
+UserController.refreshToken = async (req, res) => {
+  const {refreshToken} = req.body;
+  // model validation
+  if (!refreshToken) {
+    res.status(400);
+    throw new Error('Missing refresh token.');
+  }
+
+  // make sure token valid
+  const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+  const token = await prisma.refreshToken.findUnique({
+    where: {id: payload.jwtId}
+  });
+  if (!token || token.revoked || token.hashedToken !== string.hash(refreshToken)) {
+    res.status(401);
+    throw new Error('Unauthorized');
+  }
+
+  // make sure user registered
+  const user = await prisma.user.findUnique({
+    data: {id: payload.userId}
+  });
+  if (!user) {
+    res.status(401);
+    throw new Error('Unauthorized');
+  }
+
+  // create new refresh token
+  return await prisma.$transaction(async pris => {
+    await pris.refreshToken.delete({
+      where: {id: payload.jwtId}
+    });
+
+    const jwtId = v4();
+    const token = await jwt.signTokens(user, jwtId);
+    await pris.refreshToken.create({
+      data: {id: jwtId, hashedToken: token.refreshToken, userId: user.id}
+    });
+
+    return token;
+  });
 };
 
 export default UserController;
