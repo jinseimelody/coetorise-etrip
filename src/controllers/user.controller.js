@@ -55,7 +55,7 @@ UserController.login = async (req, res) => {
   const jwtId = v4();
   const token = await jwt.signTokens(user, jwtId);
   await prisma.refreshToken.create({
-    data: {id: jwtId, hashedToken: token.refreshToken, userId: user.id}
+    data: {id: jwtId, hashedToken: string.hash(token.refreshToken), userId: user.id}
   });
   return res.json(token);
 };
@@ -66,6 +66,11 @@ UserController.logout = async (req, res) => {
     res.status(400);
     throw new Error('Bad request');
   }
+
+  const payload = await jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+  await prisma.refreshToken.delete({
+    where: {id: payload.jwtId}
+  });
 };
 
 UserController.refreshToken = async (req, res) => {
@@ -81,22 +86,23 @@ UserController.refreshToken = async (req, res) => {
   const token = await prisma.refreshToken.findUnique({
     where: {id: payload.jwtId}
   });
+
   if (!token || token.revoked || token.hashedToken !== string.hash(refreshToken)) {
     res.status(401);
-    throw new Error('Unauthorized');
+    throw new Error('Unauthorized token');
   }
 
   // make sure user registered
   const user = await prisma.user.findUnique({
-    data: {id: payload.userId}
+    where: {id: payload.userId}
   });
   if (!user) {
     res.status(401);
-    throw new Error('Unauthorized');
+    throw new Error('Unauthorized user');
   }
 
   // create new refresh token
-  return await prisma.$transaction(async pris => {
+  await prisma.$transaction(async pris => {
     await pris.refreshToken.delete({
       where: {id: payload.jwtId}
     });
@@ -104,10 +110,10 @@ UserController.refreshToken = async (req, res) => {
     const jwtId = v4();
     const token = await jwt.signTokens(user, jwtId);
     await pris.refreshToken.create({
-      data: {id: jwtId, hashedToken: token.refreshToken, userId: user.id}
+      data: {id: jwtId, hashedToken: string.hash(token.refreshToken), userId: user.id}
     });
 
-    return token;
+    return res.json(token);
   });
 };
 

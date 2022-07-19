@@ -2,12 +2,12 @@ import {jwt} from './helpers';
 
 const middleware = {};
 
+// eslint-disable-next-line no-unused-vars
 middleware.errorHandler = (err, req, res, next) => {
-  let status = res.statusCode || 500;
-  if (err.isJoi === true) status = 442;
+  if (err.isJoi === true) res.status(442);
 
-  res.status(status);
-  res.send({
+  res.status(res.statusCode || 500);
+  return res.json({
     error: {
       message: err.message
     }
@@ -19,10 +19,11 @@ middleware.auth = (req, res, next) => {
 
   if (!authorization) {
     res.status(401);
-    throw new Error('Unauthorized.^^');
+    throw new Error('Unauthorized.');
   }
 
   try {
+    // eslint-disable-next-line no-unused-vars
     const [_, token] = authorization.split(' ');
     const payload = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
     req.payload = payload;

@@ -36,6 +36,80 @@ model RefreshToken {
   @@map("refresh_token")
 }
 
+model EndPoint {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  fsp Trip? @relation("from")
+  tsp Trip? @relation("to")
+  @@map("end_point")
+}
+
+model Trip {
+  id         Int        @id @default(autoincrement())
+  fromId     Int        @unique
+  toId       Int        @unique
+  distance   Int
+  travelTime Int
+  price      Int
+  from       EndPoint   @relation("from", fields: [fromId], references: [id])
+  to         EndPoint   @relation("to", fields: [toId], references: [id])
+  Schedule   Schedule[]
+}
+
+model Schedule {
+  id       Int      @id @default(autoincrement())
+  title    String
+  date     DateTime
+  start    DateTime
+  end      DateTime
+  cron     String
+  cronType String   @default("Daily")
+  note     String
+  tripId   Int
+  trip     Trip     @relation(fields: [tripId], references: [id])
+}
+
+model DayOff {
+  scheduleId Int
+  date       DateTime
+
+  @@unique(fields: [scheduleId, date], name: "unique")
+  @@map("day_of")
+}
+
+model Bus {
+  id       String @id
+  layoutId String @default("Standard")
+}
+
+model SeatOnLayout {
+  id       String
+  layoutId String
+
+  @@unique(fields: [id, layoutId], name: "unique")
+  @@map("seat_on_layout")
+}
+
+model BusAssign {
+  busId      String
+  scheduleId Int
+
+  @@unique(fields: [busId, scheduleId], name: "unique")
+  @@map("bus_assign")
+}
+
+model booking {
+  id         Int    @id @default(autoincrement())
+  scheduleId Int
+  date       String
+  seatId     String
+  userId     Int
+  price      Int
+
+  @@unique(fields: [scheduleId, date, seatId], name: "unique")
+}
+
 enum Role {
   USER
   ADMIN

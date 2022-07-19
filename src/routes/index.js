@@ -1,16 +1,11 @@
 import express from 'express';
-import todoRoute from './todo.route.js';
-import userRoute from './user.route.js';
 
 const apiRoute = express.Router();
 
-// middleware that is specific to this router
-apiRoute.use((req, res, next) => {
-  next();
-});
-
-apiRoute.use('/todos', todoRoute);
-apiRoute.use('/users', userRoute);
+apiRoute.use('/user', require('./user.route').default);
+apiRoute.use('/todo', require('./todo.route').default);
+apiRoute.use('/trip', require('./trip.route').default);
+apiRoute.use('/booking', require('./booking.route').default);
 
 // define the home page route
 apiRoute.get('/', (_, res) => {

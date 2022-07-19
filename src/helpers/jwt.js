@@ -4,7 +4,7 @@ const signAccessToken = async user => {
   const payload = {userId: user.id};
   const secret = process.env.JWT_ACCESS_SECRET;
   const options = {
-    expiresIn: '1s',
+    expiresIn: '10m',
     issuer: 'm.coetorise.com',
     audience: '' + user.id
   };
