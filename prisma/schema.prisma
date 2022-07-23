@@ -42,6 +42,7 @@ model EndPoint {
 
   fsp Trip? @relation("from")
   tsp Trip? @relation("to")
+
   @@map("end_point")
 }
 
@@ -58,16 +59,17 @@ model Trip {
 }
 
 model Schedule {
-  id       Int      @id @default(autoincrement())
-  title    String
-  date     DateTime
-  start    DateTime
-  end      DateTime
-  cron     String
-  cronType String   @default("Daily")
-  note     String
-  tripId   Int
-  trip     Trip     @relation(fields: [tripId], references: [id])
+  id        Int        @id @default(autoincrement())
+  title     String
+  date      DateTime?
+  start     DateTime
+  end       DateTime
+  cron      String
+  cronType  String     @default("Daily")
+  note      String
+  tripId    Int
+  trip      Trip       @relation(fields: [tripId], references: [id])
+  BusAssign BusAssign?
 }
 
 model DayOff {
@@ -79,8 +81,9 @@ model DayOff {
 }
 
 model Bus {
-  id       String @id
-  layoutId String @default("Standard")
+  id        String      @id
+  layoutId  String      @default("Standard")
+  BusAssign BusAssign[]
 }
 
 model SeatOnLayout {
@@ -94,8 +97,10 @@ model SeatOnLayout {
 model BusAssign {
   busId      String
   scheduleId Int
+  bus        Bus      @relation(fields: [busId], references: [id])
+  schedule   Schedule @relation(fields: [scheduleId], references: [id])
 
-  @@unique(fields: [busId, scheduleId], name: "unique")
+  @@unique(fields: [scheduleId], name: "unique")
   @@map("bus_assign")
 }
 

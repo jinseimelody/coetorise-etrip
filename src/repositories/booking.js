@@ -16,7 +16,8 @@ Booking.findTrips = async ({from, to, date}) => {
     seat_count AS (
         SELECT s.Id
         , ba.BusId
-        , count(s.id) AS NonBookedCount
+        , b.LayoutId
+        , count(s.id) AS nonBookedCount
         FROM trip t
         INNER JOIN schedule s
             ON t.Id = s.TripId
@@ -34,21 +35,23 @@ Booking.findTrips = async ({from, to, date}) => {
             AND bk.SeatId = sol.Id
             AND bk.Date = ${date}
         WHERE bk.Id IS NULL
-        GROUP BY s.Id, ba.BusId
+        GROUP BY s.Id, ba.BusId, b.LayoutId
     )
     SELECT 
-        s.Id
-        , s.Start
-        , s.End
-        , s.Cron
-        , s.CronType
-        , s.Date
-        , fep.Name AS 'From'
-        , eep.Name AS 'To'
-        , t.Distance
-        , t.TravelTime
-        , sc.BusId
-        , sc.NonBookedCount
+        s.Id as scheduleId
+        , s.start
+        , s.end
+        , s.cron
+        , s.cronType
+        , s.date
+        , fep.Name AS 'from'
+        , eep.Name AS 'to'
+        , t.distance
+        , t.travelTime
+        , t.price
+        , sc.busId
+        , sc.layoutId
+        , sc.nonBookedCount
     FROM seat_count sc
     INNER JOIN schedule s 
         ON s.id = sc.id
@@ -63,8 +66,8 @@ Booking.findTrips = async ({from, to, date}) => {
 Booking.findSeats = async ({scheduleId, date}) => {
   return await prisma.$queryRaw`
     SELECT DISTINCT
-        sol.Id as SeatId
-        , bk.Id as BookingId
+        sol.Id as seatId
+        , bk.Id as bookingId
     FROM
         bus_assign ba
     INNER JOIN bus b 

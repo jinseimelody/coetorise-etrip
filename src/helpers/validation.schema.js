@@ -19,7 +19,7 @@ schema.booking = {
     to: Joi.number().required(),
     date: Joi.date().required().format('YYYY-MM-DD').utc()
   }),
-  join: Joi.object({
+  placement: Joi.object({
     scheduleId: Joi.number().required(),
     date: Joi.date().required().format('YYYY-MM-DD').utc()
   })

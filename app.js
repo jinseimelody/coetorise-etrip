@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import express from 'express';
+import {queryParser} from 'express-query-parser';
 import https from 'https';
+import http from 'http';
 import cors from 'cors';
 import morgan from 'morgan';
 import path from 'path';
@@ -17,6 +19,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.use(express.json());
 
+app.use(
+  queryParser({
+    parseNull: true,
+    parseUndefined: true,
+    parseBoolean: true,
+    parseNumber: true
+  })
+);
+
 // config logging
 let logging = morgan('dev');
 if (process.env.LOGGING_MODE === 'combined') {
@@ -30,7 +41,7 @@ app.use(logging);
 
 // config cross side request origin
 const corsDelegete = (req, callback) => {
-  const allowList = ['http://localhost:3000'];
+  const allowList = ['http://localhost:3000', 'http://192.168.1.9:3000'];
   const origin = req.header('Origin');
   callback(null, {
     origin: allowList.indexOf(origin) > -1,
@@ -41,7 +52,7 @@ app.use(cors(corsDelegete));
 
 // config server
 dns.rewire();
-let server = app;
+let server = http.createServer(app);
 let port = 80;
 if (process.env.SSL_MODE === 'enabled') {
   port = 443;
