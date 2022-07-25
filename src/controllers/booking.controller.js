@@ -1,49 +1,18 @@
-import {orm} from '~/config';
-import {validationSchema} from '~/helpers';
-import {Booking} from '~/repositories';
+import {validationSchema, http_status} from '~/common';
+import BookingService from '~/services/booking.service';
 
-const prisma = orm.getInstace();
 const schema = validationSchema.booking;
 const BookingController = {};
 
-BookingController.search = async (req, res) => {
-  const {from, to, date} = req.query;
-  const validation = schema.search.validate(req.query);
+BookingController.create = async (req, res) => {
+  const {scheduleId, date, seatIds} = req.body;
+  const validation = schema.create.validate(req.body);
   if (validation.error) throw validation.error;
 
-  const result = await Booking.findTrips({from, to, date});
-  return res.json(result);
-};
-
-BookingController.placement = async (req, res) => {
-  const {scheduleId, date} = req.query;
-  const validation = schema.placement.validate(req.query);
-  if (validation.error) throw validation.error;
-
-  const bus = (
-    await prisma.busAssign.findFirst({
-      where: {scheduleId},
-      include: {
-        bus: true
-      }
-    })
-  ).bus;
-
-  const trip = (
-    await prisma.schedule.findUnique({
-      where: {id: scheduleId},
-      include: {trip: true}
-    })
-  ).trip;
-
-  console.log(trip);
-  const seats = await Booking.findSeats({scheduleId, date});
-
-  return res.json({
-    trip,
-    bus,
-    seats: seats
-  });
+  const userId = 1;
+  const creRes = await BookingService.create({scheduleId, date, seatIds, userId});
+  res.status = http_status.created;
+  return res.json(creRes);
 };
 
 export default BookingController;

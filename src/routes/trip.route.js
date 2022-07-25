@@ -1,9 +1,10 @@
 import express from 'express';
 import {TripController} from '~/controllers';
-import middleware, {use} from '~/middleware';
+import {use} from '~/middleware';
 
 const router = express.Router();
 
-router.get('/', middleware.auth, use(TripController.getAll));
+router.get('/', use(TripController.search));
+router.get('/:scheduleId/:date', use(TripController.getOne));
 
 export default router;

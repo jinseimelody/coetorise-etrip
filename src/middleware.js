@@ -1,13 +1,14 @@
-import {jwt} from './helpers';
+import {helper, http_status} from '~/common';
 
 const middleware = {};
 
 // eslint-disable-next-line no-unused-vars
 middleware.errorHandler = (err, req, res, next) => {
-  if (err.isJoi === true) res.status(442);
+  let status = err.code || http_status.internal_server_error;
+  if (err.isJoi === true) status = http_status.unprocessable_entity;
 
-  res.status(res.statusCode || 500);
   return res.json({
+    status,
     error: {
       message: err.message
     }
@@ -25,7 +26,7 @@ middleware.auth = (req, res, next) => {
   try {
     // eslint-disable-next-line no-unused-vars
     const [_, token] = authorization.split(' ');
-    const payload = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+    const payload = helper.jwt.verify(token, process.env.JWT_ACCESS_SECRET);
     req.payload = payload;
   } catch (err) {
     res.status(401);

@@ -1,7 +1,6 @@
 import {v4} from 'uuid';
 import {orm} from '~/config';
-import {jwt, string} from '~/helpers';
-import {validationSchema} from '~/helpers';
+import {validationSchema, helper} from '~/common';
 
 const prisma = orm.getInstace();
 const UserController = {};
@@ -19,14 +18,18 @@ UserController.register = async (req, res) => {
 
     // create new user
     const user = await pris.user.create({
-      data: {name: name ?? email, email, password: string.hash(password)}
+      data: {name: name ?? email, email, password: helper.string.hash(password)}
     });
 
     // create token
     const jwtId = v4();
-    const token = await jwt.signTokens(user, jwtId);
+    const token = await helper.jwt.signTokens(user, jwtId);
     await pris.refreshToken.create({
-      data: {id: jwtId, hashedToken: string.hash(token.refreshToken), userId: user.id}
+      data: {
+        id: jwtId,
+        hashedToken: helper.string.hash(token.refreshToken),
+        userId: user.id
+      }
     });
 
     return token;
@@ -43,7 +46,7 @@ UserController.login = async (req, res) => {
 
   // make sure authentication credentials is correct
   const user = await prisma.user.findUnique({
-    where: {unique: {email, password: string.hash(password)}}
+    where: {unique: {email, password: helper.string.hash(password)}}
   });
 
   if (!user) {
@@ -53,9 +56,13 @@ UserController.login = async (req, res) => {
 
   // create token
   const jwtId = v4();
-  const token = await jwt.signTokens(user, jwtId);
+  const token = await helper.jwt.signTokens(user, jwtId);
   await prisma.refreshToken.create({
-    data: {id: jwtId, hashedToken: string.hash(token.refreshToken), userId: user.id}
+    data: {
+      id: jwtId,
+      hashedToken: helper.string.hash(token.refreshToken),
+      userId: user.id
+    }
   });
   return res.json(token);
 };
@@ -67,7 +74,7 @@ UserController.logout = async (req, res) => {
     throw new Error('Bad request');
   }
 
-  const payload = await jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+  const payload = await helper.jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
   await prisma.refreshToken.delete({
     where: {id: payload.jwtId}
   });
@@ -82,12 +89,12 @@ UserController.refreshToken = async (req, res) => {
   }
 
   // make sure token valid
-  const payload = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+  const payload = helper.jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
   const token = await prisma.refreshToken.findUnique({
     where: {id: payload.jwtId}
   });
 
-  if (!token || token.revoked || token.hashedToken !== string.hash(refreshToken)) {
+  if (!token || token.revoked || token.hashedToken !== helper.string.hash(refreshToken)) {
     res.status(401);
     throw new Error('Unauthorized token');
   }
@@ -108,9 +115,13 @@ UserController.refreshToken = async (req, res) => {
     });
 
     const jwtId = v4();
-    const token = await jwt.signTokens(user, jwtId);
+    const token = await helper.jwt.signTokens(user, jwtId);
     await pris.refreshToken.create({
-      data: {id: jwtId, hashedToken: string.hash(token.refreshToken), userId: user.id}
+      data: {
+        id: jwtId,
+        hashedToken: helper.string.hash(token.refreshToken),
+        userId: user.id
+      }
     });
 
     return res.json(token);

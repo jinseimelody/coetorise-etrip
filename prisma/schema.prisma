@@ -9,13 +9,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Todo {
-  id       Int     @id @default(autoincrement())
-  task     String?
-  status   Int?
-  authorId Int?
-}
-
 model User {
   id            Int            @id @default(autoincrement())
   name          String
@@ -104,10 +97,10 @@ model BusAssign {
   @@map("bus_assign")
 }
 
-model booking {
-  id         Int    @id @default(autoincrement())
+model Ticket {
+  id         Int      @id @default(autoincrement())
   scheduleId Int
-  date       String
+  date       DateTime
   seatId     String
   userId     Int
   price      Int

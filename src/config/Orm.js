@@ -1,5 +1,4 @@
-import {PrismaClient} from '@prisma/client';
-import {string} from '~/helpers';
+import {PrismaClient, Prisma} from '@prisma/client';
 
 const prismaConfig = {
   log: ['error']
@@ -13,6 +12,7 @@ orm.getInstace = () => {
   }
 
   orm.instance = new PrismaClient(prismaConfig);
+  orm.helper = {...Prisma};
   return orm.instance;
 };
 
