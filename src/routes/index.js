@@ -5,6 +5,7 @@ const apiRoute = express.Router();
 apiRoute.use('/user', require('./user.route').default);
 apiRoute.use('/trips', require('./trip.route').default);
 apiRoute.use('/bookings', require('./booking.route').default);
+apiRoute.use('/endpoints', require('./endpoint.route').default);
 
 // define the home page route
 apiRoute.get('/', (_, res) => {

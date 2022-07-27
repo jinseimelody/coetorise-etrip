@@ -85,6 +85,8 @@ const onConnection = socket => {
 };
 io.on('connection', onConnection);
 
+app.use(middleware.reqInterceptor);
+
 // config routing
 app.use('/api', apiRoute);
 

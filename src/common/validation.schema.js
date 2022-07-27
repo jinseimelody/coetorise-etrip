@@ -2,12 +2,18 @@ const Joi = require('joi').extend(require('@joi/date'));
 const schema = {};
 
 const rules = {
-  email: Joi.string().required().email().lowercase(),
-  password: Joi.string().required().min(2),
+  email: Joi.string().email().lowercase(),
+  password: Joi.string().min(2),
   string: Joi.string(),
-  number: Joi.number().required(),
-  date: Joi.date().required().format('YYYY-MM-DD').utc(),
-  array: Joi.array().required()
+  number: Joi.number(),
+  date: Joi.date().format('YYYY-MM-DD').utc(),
+  array: Joi.array()
+};
+
+schema.endpoint = {
+  search: Joi.object({
+    q: Joi.string().allow('', null)
+  })
 };
 
 schema.user = {

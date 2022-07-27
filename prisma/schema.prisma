@@ -30,8 +30,9 @@ model RefreshToken {
 }
 
 model EndPoint {
-  id   Int    @id @default(autoincrement())
-  name String
+  id       Int    @id @default(autoincrement())
+  name     String
+  district String
 
   fsp Trip? @relation("from")
   tsp Trip? @relation("to")

@@ -2,6 +2,10 @@ import {helper, http_status} from '~/common';
 
 const middleware = {};
 
+middleware.reqInterceptor = (req, res, next) => {
+  next();
+};
+
 // eslint-disable-next-line no-unused-vars
 middleware.errorHandler = (err, req, res, next) => {
   let status = err.code || http_status.internal_server_error;
