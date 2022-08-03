@@ -78,8 +78,8 @@ TripService.getOne = async ({scheduleId, date}) => {
   // determine which trip and bus assigned to this schedule
   const general = await prisma.$queryRaw`
     SELECT
-      ${scheduleId} as scheduleId
-      , ${date} as date  
+      s.id as scheduleId
+      , ${date} as date
       , ba.busId
       , b.layoutId
       , t.price

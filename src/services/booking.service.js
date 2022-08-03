@@ -6,11 +6,22 @@ const BookingService = {};
 
 BookingService.create = async ({scheduleId, date, seatIds, userId}) => {
   return await prisma.$transaction(async pris => {
+    // make sure reserved day is not a dayoff
+    const dayoff = await pris.dayOff.findUnique({
+      where: {unique: {scheduleId, date: new Date(date)}}
+    });
+    if (dayoff)
+      throw helper.http.createError(http_status.not_found, `schedule not provided`);
+
     // get current price for this trip
     const schedule = await pris.schedule.findFirst({
-      where: {id: scheduleId, date: new Date(date)},
+      where: {
+        id: scheduleId,
+        OR: [{date: new Date(date)}, {cronType: 'Daily'}]
+      },
       include: {trip: true}
     });
+
     if (!schedule)
       throw helper.http.createError(http_status.not_found, `schedule not provided`);
     const price = schedule.trip.price;

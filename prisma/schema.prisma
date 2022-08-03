@@ -63,15 +63,17 @@ model Schedule {
   note      String
   tripId    Int
   trip      Trip       @relation(fields: [tripId], references: [id])
-  BusAssign BusAssign?
+  busAssign BusAssign?
+  dayOffs DayOff[]
 }
 
 model DayOff {
   scheduleId Int
   date       DateTime
+  schedule Schedule @relation(fields: [scheduleId], references: [id])
 
   @@unique(fields: [scheduleId, date], name: "unique")
-  @@map("day_of")
+  @@map("day_off")
 }
 
 model Bus {
