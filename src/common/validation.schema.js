@@ -13,6 +13,9 @@ const rules = {
 schema.endpoint = {
   search: Joi.object({
     q: Joi.string().allow('', null)
+  }),
+  getOne: Joi.object({
+    endpointId: rules.number
   })
 };
 
@@ -32,7 +35,13 @@ schema.trip = {
   search: Joi.object({
     from: rules.number,
     to: rules.number,
-    date: rules.date
+    date: rules.date,
+    time: rules.string,
+    layoutId: rules.string,
+    nonBookedCount: rules.number,
+    sortBy: rules.string,
+    sortType: rules.string,
+    pageNumber: rules.number
   }),
   getOne: Joi.object({
     scheduleId: rules.number,

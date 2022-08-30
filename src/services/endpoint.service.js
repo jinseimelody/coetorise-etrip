@@ -16,4 +16,10 @@ EndpointService.search = async ({q}) => {
   `;
 };
 
+EndpointService.getOne = async endpointId => {
+  return await prisma.endPoint.findUnique({
+    where: {id: Number(endpointId)}
+  });
+};
+
 export default EndpointService;

@@ -20,16 +20,15 @@ middleware.errorHandler = (err, req, res, next) => {
 };
 
 middleware.auth = (req, res, next) => {
-  const {authorization} = req.headers;
+  const {authentication} = req.headers;
 
-  if (!authorization) {
-    res.status(401);
-    throw new Error('Unauthorized.');
+  if (!authentication) {
+    throw helper.http.createError(http_status.unauthorized, 'Unauthorized.');
   }
 
   try {
     // eslint-disable-next-line no-unused-vars
-    const [_, token] = authorization.split(' ');
+    const [_, token] = authentication.split(' ');
     const payload = helper.jwt.verify(token, process.env.JWT_ACCESS_SECRET);
     req.payload = payload;
   } catch (err) {

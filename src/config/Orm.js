@@ -1,7 +1,7 @@
 import {PrismaClient, Prisma} from '@prisma/client';
 
 const prismaConfig = {
-  log: ['error']
+  log: ['error', 'query']
 };
 
 const orm = {};

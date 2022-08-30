@@ -46,7 +46,6 @@ model Trip {
   toId       Int        @unique
   distance   Int
   travelTime Int
-  price      Int
   from       EndPoint   @relation("from", fields: [fromId], references: [id])
   to         EndPoint   @relation("to", fields: [toId], references: [id])
   Schedule   Schedule[]
@@ -93,6 +92,7 @@ model SeatOnLayout {
 model BusAssign {
   busId      String
   scheduleId Int
+  price     Int
   bus        Bus      @relation(fields: [busId], references: [id])
   schedule   Schedule @relation(fields: [scheduleId], references: [id])
 

@@ -1,6 +1,6 @@
 import {v4} from 'uuid';
 import {orm} from '~/config';
-import {validationSchema, helper} from '~/common';
+import {validationSchema, helper, http_status} from '~/common';
 
 const prisma = orm.getInstace();
 const UserController = {};
@@ -49,10 +49,11 @@ UserController.login = async (req, res) => {
     where: {unique: {email, password: helper.string.hash(password)}}
   });
 
-  if (!user) {
-    res.status(401);
-    throw new Error('login failse, please check authentication credentials');
-  }
+  if (!user)
+    throw helper.http.createError(
+      http_status.unauthorized,
+      'Incorrect username or password.'
+    );
 
   // create token
   const jwtId = v4();

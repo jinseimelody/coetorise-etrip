@@ -24,9 +24,9 @@ BookingService.create = async ({scheduleId, date, seatIds, userId}) => {
 
     if (!schedule)
       throw helper.http.createError(http_status.not_found, `schedule not provided`);
-    const price = schedule.trip.price;
+    const price = 0;
 
-    // make sure picked seats are avaliable for now
+    // make sure picked seats are available for now
     const booked = await pris.ticket.aggregate({
       _count: true,
       where: {
@@ -47,8 +47,7 @@ BookingService.create = async ({scheduleId, date, seatIds, userId}) => {
         scheduleId,
         date: new Date(date),
         userId,
-        seatId,
-        price
+        seatId
       }))
     });
 

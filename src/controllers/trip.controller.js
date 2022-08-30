@@ -6,11 +6,22 @@ const schema = validationSchema.trip;
 const TripController = orm.getInstace();
 
 TripController.search = async (req, res) => {
-  const {from, to, date} = req.query;
+  const {from, to, date, time, layoutId, nonBookedCount, sortBy, sortType, pageNumber} =
+    req.query;
   const validation = schema.search.validate(req.query);
   if (validation.error) throw validation.error;
 
-  const result = await TripService.search({from, to, date});
+  const result = await TripService.search({
+    from,
+    to,
+    date,
+    time,
+    layoutId,
+    nonBookedCount,
+    sortBy,
+    sortType,
+    pageNumber
+  });
   return res.json(result);
 };
 

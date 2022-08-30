@@ -44,7 +44,7 @@ const corsDelegete = (req, callback) => {
   const allowList = ['http://localhost:3000', 'http://192.168.1.9:3000'];
   const origin = req.header('Origin');
   callback(null, {
-    origin: allowList.indexOf(origin) > -1,
+    origin: true, // allowList.indexOf(origin) > -1,
     optionsSuccessStatus: 200
   });
 };
