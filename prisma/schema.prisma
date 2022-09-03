@@ -100,15 +100,33 @@ model BusAssign {
   @@map("bus_assign")
 }
 
-model Ticket {
+model Reservation {
   id         Int      @id @default(autoincrement())
   scheduleId Int
   date       DateTime
   seatId     String
   userId     Int
-  price      Int
+  ticketId String
 
   @@unique(fields: [scheduleId, date, seatId], name: "unique")
+}
+
+model Ticket {
+  id  String @id @default(uuid())
+  scheduleId Int
+  date DateTime
+  seatIds String
+  total Int
+  status    TicketStatus     @default(WAITING)
+  expiredAt DateTime
+	createdDate DateTime
+	userId Int
+}
+
+enum TicketStatus {
+ WAITING
+ PAID
+ CANCELED
 }
 
 enum Role {

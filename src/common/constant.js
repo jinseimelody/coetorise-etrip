@@ -12,4 +12,10 @@ const http_status = {
   internal_server_error: 500
 };
 
-export {http_status};
+const ticket_status = {
+  waiting: 'WAITING',
+  paid: 'PAID',
+  canceled: 'CANCELED'
+};
+
+export {http_status, ticket_status};

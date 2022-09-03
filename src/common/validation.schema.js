@@ -54,6 +54,9 @@ schema.booking = {
     scheduleId: rules.number,
     date: rules.date,
     seatIds: rules.array.items(Joi.string()).min(1).unique()
+  }),
+  getOne: Joi.object({
+    ticketId: rules.string
   })
 };
 

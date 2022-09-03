@@ -52,7 +52,7 @@ TripService.search = async ({
         ON b.Id = ba.BusId
       INNER JOIN seat_on_layout sol
         ON sol.LayoutId = b.LayoutId
-      LEFT JOIN ticket tk
+      LEFT JOIN reservation tk
         ON s.Id = tk.ScheduleId
         AND tk.SeatId = sol.Id
         AND tk.Date = ${date}
@@ -137,7 +137,7 @@ TripService.getOne = async ({scheduleId, date}) => {
     SELECT
       ba.busId
       , b.layoutId
-      , 0 as price
+      , ba.price
     FROM schedule s
     INNER JOIN trip t
       ON t.id = s.tripId
@@ -159,7 +159,7 @@ TripService.getOne = async ({scheduleId, date}) => {
       AND ba.BusId = b.Id
     INNER JOIN seat_on_layout sol
       ON sol.LayoutId = b.LayoutId
-    LEFT JOIN ticket t
+    LEFT JOIN reservation t
       ON t.Date = ${date}
       AND t.ScheduleId = ba.ScheduleId
       AND t.SeatId = sol.Id

@@ -32,6 +32,8 @@
     "http": "^0.0.1-security",
     "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
+    "kue": "^0.11.6",
+    "moment": "^2.29.4",
     "morgan": "^1.10.0",
     "rotating-file-stream": "^3.0.4",
     "socket.io": "^4.5.1",
