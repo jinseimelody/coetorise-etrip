@@ -6,7 +6,10 @@ import moment from 'moment';
 const prisma = orm.getInstace();
 const BookingService = {};
 
-BookingService.create = async ({scheduleId, date, seatIds, userId}) => {
+BookingService.create = async (chosen, contact, userId) => {
+  const {scheduleId, date, seatIds} = chosen;
+  const {passenger, phoneNumber, email, note} = contact;
+
   return await prisma.$transaction(async pris => {
     // make sure reserved day is not a dayoff
     const dayoff = await pris.dayOff.findUnique({
@@ -62,6 +65,10 @@ BookingService.create = async ({scheduleId, date, seatIds, userId}) => {
         total: 0,
         status: ticket_status.waiting,
         expiredAt: moment().add(5, 'minutes').toDate(),
+        passenger: passenger,
+        phoneNumber: phoneNumber,
+        email: email,
+        note: note,
         createdDate: new Date(),
         userId
       }

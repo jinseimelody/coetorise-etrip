@@ -51,9 +51,17 @@ schema.trip = {
 
 schema.booking = {
   create: Joi.object({
-    scheduleId: rules.number,
-    date: rules.date,
-    seatIds: rules.array.items(Joi.string()).min(1).unique()
+    chosen: Joi.object({
+      scheduleId: rules.number,
+      date: rules.date,
+      seatIds: rules.array.items(Joi.string()).min(1).unique()
+    }),
+    contact: Joi.object({
+      passenger: rules.string,
+      phoneNumber: rules.string,
+      email: rules.email,
+      note: rules.string
+    })
   }),
   getOne: Joi.object({
     ticketId: rules.string

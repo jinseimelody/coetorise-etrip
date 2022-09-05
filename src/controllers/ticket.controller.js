@@ -1,4 +1,3 @@
-import {prisma} from '@prisma/client';
 import {validationSchema} from '~/common';
 import TicketService from '~/services/ticket.service';
 

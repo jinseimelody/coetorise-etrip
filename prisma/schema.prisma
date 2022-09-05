@@ -120,6 +120,10 @@ model Ticket {
   status    TicketStatus     @default(WAITING)
   expiredAt DateTime
 	createdDate DateTime
+  passenger String
+	phoneNumber String
+	email String
+	note String
 	userId Int
 }
 
