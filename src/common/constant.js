@@ -7,6 +7,7 @@ const http_status = {
   unauthorized: 401,
   forbidden: 403,
   not_found: 404,
+  not_modified: 304,
   method_not_allowed: 405,
   gone: 410,
   internal_server_error: 500

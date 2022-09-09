@@ -122,9 +122,16 @@ model Ticket {
 	createdDate DateTime
   passenger String
 	phoneNumber String
-	email String
-	note String
+	email String? @default("")
+	note String? @default("")
 	userId Int
+}
+
+model CoetoriseWallet {
+  userId Int @id
+  systemPoint Int @default(0)
+  balance Int @default(0)
+  @@map("coetorise_wallet")
 }
 
 enum TicketStatus {

@@ -68,4 +68,12 @@ schema.booking = {
   })
 };
 
+schema.payment = {
+  pay: Joi.object({
+    paymentMethod: rules.number,
+    ticketId: rules.string,
+    sessionId: rules.number
+  })
+};
+
 export default schema;
