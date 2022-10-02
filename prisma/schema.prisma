@@ -33,9 +33,10 @@ model EndPoint {
   id       Int    @id @default(autoincrement())
   name     String
   district String
+  createdDate DateTime
 
-  fsp Trip? @relation("from")
-  tsp Trip? @relation("to")
+  fsp Trip[] @relation("from")
+  tsp Trip[] @relation("to")
 
   @@map("end_point")
 }

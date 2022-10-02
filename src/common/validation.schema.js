@@ -11,11 +11,34 @@ const rules = {
 };
 
 schema.endpoint = {
-  search: Joi.object({
-    q: Joi.string().allow('', null)
+  getAll: Joi.object({
+    limit: rules.number,
+    skip: rules.number
   }),
   getOne: Joi.object({
-    endpointId: rules.number
+    id: rules.number
+  }),
+  create: Joi.object({
+    name: rules.string,
+    district: rules.string
+  }),
+  put: Joi.object({
+    id: rules.number,
+    name: rules.string,
+    district: rules.string
+  }),
+  patch: Joi.object({
+    ids: rules.array.items(Joi.number())
+  }),
+  delete: Joi.object({
+    id: rules.number
+  })
+};
+
+schema.auth = {
+  login: Joi.object({
+    email: rules.email,
+    password: rules.password
   })
 };
 

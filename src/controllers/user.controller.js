@@ -2,7 +2,7 @@ import {v4} from 'uuid';
 import {orm} from '~/config';
 import {validationSchema, helper, http_status} from '~/common';
 
-const prisma = orm.getInstace();
+const prisma = orm.getInstance();
 const UserController = {};
 
 UserController.register = async (req, res) => {

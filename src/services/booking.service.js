@@ -3,7 +3,7 @@ import {orm} from '~/config';
 import {v4} from 'uuid';
 import moment from 'moment';
 
-const prisma = orm.getInstace();
+const prisma = orm.getInstance();
 const BookingService = {};
 
 BookingService.create = async (chosen, contact, userId) => {

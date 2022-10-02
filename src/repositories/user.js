@@ -1,6 +1,6 @@
 import {orm} from '~/config';
 
-const prisma = orm.getInstace();
+const prisma = orm.getInstance();
 const User = {};
 
 User.findByEmail = async email => {

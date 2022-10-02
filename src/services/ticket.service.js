@@ -1,6 +1,6 @@
 import {orm} from '~/config';
 
-const prisma = orm.getInstace();
+const prisma = orm.getInstance();
 const TicketService = {};
 
 TicketService.search = async ({userId, ticketId}) => {

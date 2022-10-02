@@ -1,11 +1,16 @@
 import {helper, http_status, ticket_status} from '~/common';
 import {orm} from '~/config';
 import {cancelJob} from '~/config/kue';
+import Stripe from 'stripe';
 
-const prisma = orm.getInstace();
+const stripe = new Stripe(
+  'sk_test_51Lg4xQETyoSpWwFkahh4Hu0g5eBuTkhFXvDa3GmaHORWZKDd03zGsUIYW5R4Y5C8mUOhfxTtHcijOYwJA7rM8Nwx00bsiF0wo7'
+);
+const prisma = orm.getInstance();
 const PaymentService = {};
 
 const COETORISE_WALLET = 1;
+const STRIPE = 2;
 
 PaymentService.pay = async (paymentMethod, ticketId, sessionId, userId) => {
   if (![COETORISE_WALLET].includes(paymentMethod))
@@ -22,7 +27,7 @@ PaymentService.pay = async (paymentMethod, ticketId, sessionId, userId) => {
 
     // process payment
     let isPaymentSuccessful = false;
-    if (paymentMethod) {
+    if (COETORISE_WALLET === paymentMethod) {
       const wallet = await pris.coetoriseWallet.findUnique({
         where: {userId: userId}
       });
@@ -45,6 +50,17 @@ PaymentService.pay = async (paymentMethod, ticketId, sessionId, userId) => {
       });
 
       isPaymentSuccessful = true;
+    }
+
+    if (STRIPE === paymentMethod) {
+      const calculateOrderAmount = 1;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: () => calculateOrderAmount,
+        currency: 'usd',
+        automatic_payment_methods: {
+          enabled: true
+        }
+      });
     }
 
     if (!isPaymentSuccessful)

@@ -3,7 +3,7 @@ import {validationSchema} from '~/common';
 import TripService from '~/services/trip.service';
 
 const schema = validationSchema.trip;
-const TripController = orm.getInstace();
+const TripController = orm.getInstance();
 
 TripController.search = async (req, res) => {
   const {from, to, date, time, layoutId, nonBookedCount, sortBy, sortType, pageNumber} =

@@ -17,6 +17,7 @@ import middleware from '~/middleware';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
+app.use(express.static('public'));
 app.use(express.json());
 
 app.use(
@@ -40,15 +41,29 @@ if (process.env.LOGGING_MODE === 'combined') {
 app.use(logging);
 
 // config cross side request origin
-const corsDelegete = (req, callback) => {
-  const allowList = ['http://localhost:3000', 'http://192.168.1.9:3000'];
-  const origin = req.header('Origin');
-  callback(null, {
-    origin: true, // allowList.indexOf(origin) > -1,
-    optionsSuccessStatus: 200
-  });
+const whitelist = [
+  undefined,
+  'http://localhost:3000',
+  'http://192.168.1.2:3000',
+  'http://192.168.1.3:3000',
+  'http://192.168.1.4:3000',
+  'http://192.168.1.5:3000',
+  'http://192.168.1.6:3000',
+  'http://192.168.1.7:3000',
+  'http://192.168.1.9:3000',
+  'http://m.coetorise.com:3000'
+];
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (whitelist.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
 };
-app.use(cors(corsDelegete));
+app.use(cors(corsOptions));
 
 // config server
 dns.rewire();

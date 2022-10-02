@@ -6,7 +6,7 @@ const prismaConfig = {
 
 const orm = {};
 
-orm.getInstace = () => {
+orm.getInstance = () => {
   if (orm.instance) {
     return orm.instance;
   }

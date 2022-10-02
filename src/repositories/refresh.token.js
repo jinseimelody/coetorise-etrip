@@ -1,7 +1,7 @@
 import {orm} from '~/config';
 import {string} from '~/helpers';
 
-const prisma = orm.getInstace();
+const prisma = orm.getInstance();
 const RefreshToken = {};
 
 RefreshToken.add = async ({jwtId, refreshToken, userId}) => {

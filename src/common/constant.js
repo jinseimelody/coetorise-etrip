@@ -1,3 +1,7 @@
+const pagination = {
+  page_size: 5
+};
+
 const http_status = {
   ok: 200,
   created: 201,
@@ -9,6 +13,7 @@ const http_status = {
   not_found: 404,
   not_modified: 304,
   method_not_allowed: 405,
+  conflict: 409,
   gone: 410,
   internal_server_error: 500
 };
@@ -19,4 +24,4 @@ const ticket_status = {
   canceled: 'CANCELED'
 };
 
-export {http_status, ticket_status};
+export {http_status, ticket_status, pagination};
