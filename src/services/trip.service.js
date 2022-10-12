@@ -1,3 +1,4 @@
+import {helper, http_status} from '~/common';
 import {orm} from '~/config';
 
 const prisma = orm.getInstance();
@@ -165,6 +166,71 @@ TripService.getOne = async ({scheduleId, date}) => {
       AND t.SeatId = sol.Id
   `;
   return Object.assign(...general, {seats: seats});
+};
+
+TripService.create = async ({departure, arrival, distance, travelTime}) => {
+  return await prisma.$transaction(async pris => {
+    const duplicates = await pris.trip.findMany({
+      where: {fromId: Number(departure), toId: Number(arrival)}
+    });
+
+    if (duplicates.length)
+      throw helper.http.createError(
+        http_status.conflict,
+        'This this trip already existed.'
+      );
+
+    return await pris.trip.create({
+      data: {
+        fromId: Number(departure),
+        toId: Number(arrival),
+        distance: Number(distance),
+        travelTime: Number(travelTime)
+      }
+    });
+  });
+};
+
+TripService.update = async ({id, departure, arrival, distance, travelTime}) => {
+  return await prisma.$transaction(async pris => {
+    const duplicates = await pris.trip.findFirst({
+      where: {id: {not: Number(id)}, fromId: Number(departure), toId: Number(arrival)}
+    });
+
+    if (duplicates.length)
+      throw helper.http.createError(http_status.conflict, 'This this trip is conflict.');
+
+    return await pris.trip.update({
+      where: {id: Number(id)},
+      data: {
+        fromId: Number(departure),
+        toId: Number(arrival),
+        distance: Number(distance),
+        travelTime: Number(travelTime)
+      }
+    });
+  });
+};
+
+TripService.delete = async ids => {
+  return await prisma.$transaction(async pris => {
+    const schedules = await pris.schedule.aggregate({
+      _count: true,
+      where: {
+        tripId: {in: ids.map(x => Number(x))}
+      }
+    });
+
+    if (schedules._count > 0)
+      throw helper.http.createError(
+        http_status.conflict,
+        'Trips had been includes by other schedule'
+      );
+
+    return await pris.trip.deleteMany({
+      where: {id: {in: ids.map(x => Number(x))}}
+    });
+  });
 };
 
 export default TripService;

@@ -5,10 +5,9 @@ const schema = validationSchema.endpoint;
 const EndpointController = {};
 
 EndpointController.search = async (req, res) => {
-  // await new Promise(resolve => setTimeout(resolve, 1000));
   const {q} = req.query;
-  const validation = schema.search.validate(req.query);
-  if (validation.error) throw validation.error;
+  // const validation = schema.search.validate(req.query);
+  // if (validation.error) throw validation.error;
 
   const result = await EndpointService.search({q});
   return res.json(result);

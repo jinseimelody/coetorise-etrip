@@ -49,7 +49,7 @@ model Trip {
   travelTime Int
   from       EndPoint   @relation("from", fields: [fromId], references: [id])
   to         EndPoint   @relation("to", fields: [toId], references: [id])
-  Schedule   Schedule[]
+  schedules   Schedule[]
 }
 
 model Schedule {

@@ -66,9 +66,36 @@ schema.trip = {
     sortType: rules.string,
     pageNumber: rules.number
   }),
+  getOnes: Joi.object({
+    id: rules.number
+  }),
   getOne: Joi.object({
     scheduleId: rules.number,
     date: rules.date
+  }),
+  create: Joi.object({
+    departure: rules.number,
+    arrival: rules.number,
+    distance: rules.number,
+    travelTime: rules.number
+  }),
+  put: Joi.object({
+    id: rules.number,
+    departure: rules.number,
+    arrival: rules.number,
+    distance: rules.number,
+    travelTime: rules.number
+  }),
+  patch: Joi.object({
+    ids: rules.array.items(Joi.number())
+  })
+};
+
+schema.schedule = {
+  get: Joi.object({
+    tripId: rules.number,
+    limit: rules.number,
+    skip: rules.number
   })
 };
 

@@ -75,12 +75,10 @@ EndPointController.put = async (req, res) => {
   const validation = schema.put.validate({...req.params, ...req.body});
   if (validation.error) throw validation.error;
 
-  const modRes = await prisma.endPoint.update({
-    where: {id: Number(id)},
-    data: {
-      name,
-      district
-    }
+  const modRes = await EndpointService.update({
+    id,
+    name,
+    district
   });
 
   return res.json({

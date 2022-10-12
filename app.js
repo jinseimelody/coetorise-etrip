@@ -51,7 +51,16 @@ const whitelist = [
   'http://192.168.1.6:3000',
   'http://192.168.1.7:3000',
   'http://192.168.1.9:3000',
-  'http://m.coetorise.com:3000'
+  'http://m.coetorise.com:3000',
+  'http://localhost:3001',
+  'http://192.168.1.2:3001',
+  'http://192.168.1.3:3001',
+  'http://192.168.1.4:3001',
+  'http://192.168.1.5:3001',
+  'http://192.168.1.6:3001',
+  'http://192.168.1.7:3001',
+  'http://192.168.1.9:3001',
+  'http://m.coetorise.com:3001'
 ];
 const corsOptions = {
   origin: (origin, callback) => {

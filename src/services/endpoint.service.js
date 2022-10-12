@@ -4,6 +4,12 @@ import {orm} from '~/config';
 const prisma = orm.getInstance();
 const EndpointService = {};
 
+EndpointService.getOne = async endpointId => {
+  return await prisma.endPoint.findUnique({
+    where: {id: Number(endpointId)}
+  });
+};
+
 EndpointService.create = async ({name, district}) => {
   return await prisma.$transaction(async pris => {
     const duplicates = await pris.endPoint.findMany({
@@ -18,6 +24,18 @@ EndpointService.create = async ({name, district}) => {
 
     return await pris.endPoint.create({
       data: {name: name, district: district, createdDate: new Date()}
+    });
+  });
+};
+
+EndpointService.update = async ({id, name, district}) => {
+  return await prisma.$transaction(async pris => {
+    return await pris.endPoint.update({
+      where: {id: Number(id)},
+      data: {
+        name,
+        district
+      }
     });
   });
 };
@@ -61,12 +79,6 @@ EndpointService.search = async ({q}) => {
     WHERE name like ${pattern}
       OR district like ${pattern}
   `;
-};
-
-EndpointService.getOne = async endpointId => {
-  return await prisma.endPoint.findUnique({
-    where: {id: Number(endpointId)}
-  });
 };
 
 export default EndpointService;
